@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace AI.DecisionTree
 {
@@ -10,9 +11,9 @@ namespace AI.DecisionTree
     class BinaryDecisionNode : Node
     {
         private Node trueChild, falseChild;
-        Func<bool> condition;
+        /*Func<bool>*/Condition condition;
 
-        public BinaryDecisionNode(Node trueChild, Node falseChild, Func<bool> condition)
+        public BinaryDecisionNode(Node trueChild, Node falseChild, Condition condition)
         {
             this.trueChild = trueChild;
             this.falseChild = falseChild;
@@ -22,7 +23,7 @@ namespace AI.DecisionTree
         public override void Eval()
         {
 
-            if (condition())
+            if (condition.CheckCondition())
                 trueChild.Eval();
             else
                 falseChild.Eval();
@@ -41,6 +42,29 @@ namespace AI.DecisionTree
         public override void Eval()
         {
             action();
+        }
+    }
+
+    class Condition
+    {
+        public virtual bool CheckCondition() { return false; }
+    }
+
+    class ArgCondition<T> : Condition
+    {
+
+        public Func<T, bool> condition;
+        public T arg;
+
+        public ArgCondition(Func<T, bool> condition, T arg)
+        {
+            this.condition = condition;
+            this.arg = arg;
+        }
+
+        public override bool CheckCondition()
+        {
+            return condition.Invoke(arg);
         }
     }
 }
