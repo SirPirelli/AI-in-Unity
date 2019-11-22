@@ -9,7 +9,7 @@ public class NavAgent : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var agent = GetComponent<NavMeshAgent>().SetDestination(target.position);
+        //var agent = GetComponent<NavMeshAgent>().SetDestination(target.position);
     }
 
     // Update is called once per frame
@@ -17,4 +17,6 @@ public class NavAgent : MonoBehaviour
     {
         
     }
+
+    public void ChaseTarget() { var agent = GetComponent<NavMeshAgent>().SetDestination(target.position); }
 }

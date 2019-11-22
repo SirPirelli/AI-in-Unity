@@ -19,6 +19,7 @@ public class AIManager : MonoBehaviour
 
     Node positive = new ActionNode(() => Debug.Log("Enemy in sight!"));
     Node negative = new ActionNode(() => Debug.Log("Enemy out of sight!"));
+    //Node setTarget = new ArgAction<>
 
     Coroutine aiCoroutine;
 
@@ -37,8 +38,10 @@ public class AIManager : MonoBehaviour
             ArgCondition<Transform> coneOfViewNode = new ArgCondition<Transform>(IsInConeOfView, enemy.transform);
             ArgCondition<Transform> clearSightNode = new ArgCondition<Transform>(IsInClearSight, enemy.transform);
 
+            ArgAction<NavAgent> startChaseAction = new ArgAction<NavAgent>(StartChase, enemy.GetComponent<NavAgent>());
+
             //initialize nodes
-            Node thirdLayer = new BinaryDecisionNode(positive, negative, clearSightNode);
+            Node thirdLayer = new BinaryDecisionNode(startChaseAction, negative, clearSightNode);
             Node secondLayer = new BinaryDecisionNode(thirdLayer, negative, coneOfViewNode);
             Node root = new BinaryDecisionNode(secondLayer, negative, viewDistanceNode);
 
@@ -61,6 +64,11 @@ public class AIManager : MonoBehaviour
             Handles.DrawLine(item.transform.position, item.transform.position + new Vector3(fovB.x, 0, fovB.y) * viewDistance);
 
         }
+    }
+
+    private void StartChase(NavAgent navAgent)
+    {
+        navAgent.ChaseTarget();
     }
 
 
@@ -100,7 +108,10 @@ public class AIManager : MonoBehaviour
         while(true)
         {
             foreach (var item in enemiesDecisionTree)
+            {
                 item.Value.Eval();
+                yield return null;
+            }
 
             yield return new WaitForSecondsRealtime(updateTimeStep);
         }

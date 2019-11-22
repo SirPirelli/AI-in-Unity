@@ -11,7 +11,7 @@ namespace AI.DecisionTree
     class BinaryDecisionNode : Node
     {
         private Node trueChild, falseChild;
-        /*Func<bool>*/Condition condition;
+        Condition condition;
 
         public BinaryDecisionNode(Node trueChild, Node falseChild, Condition condition)
         {
@@ -27,6 +27,23 @@ namespace AI.DecisionTree
                 trueChild.Eval();
             else
                 falseChild.Eval();
+        }
+    }
+
+    class ArgAction<T> : Node
+    {
+        Action<T> action;
+        T parameter;
+
+        public ArgAction(Action<T> action, T parameter)
+        {
+            this.action = action;
+            this.parameter = parameter;
+        }
+
+        public override void Eval()
+        {
+            action(parameter);
         }
     }
 
