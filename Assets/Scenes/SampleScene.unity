@@ -245,7 +245,10 @@ MonoBehaviour:
   - {fileID: 1085070551}
   - {fileID: 1711925421}
   - {fileID: 2010894468}
-  viewDistance: 62.22
+  speed: 100
+  acceleration: 75
+  angularSpeed: 180
+  viewDistance: 143
   fov: 85.77
   updateTimeStep: 0.05
 --- !u!4 &817123910
@@ -438,6 +441,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 2119642696}
+  navMeshAgent: {fileID: 0}
 --- !u!195 &1085070553
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -609,6 +613,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 2119642696}
+  navMeshAgent: {fileID: 0}
 --- !u!1 &2010894468 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7663183887794189269, guid: d543934941975104581beaa236b0019b,
@@ -625,8 +630,8 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 10
-  m_Acceleration: 20
+  m_Speed: 150
+  m_Acceleration: 50
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -650,6 +655,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 2119642696}
+  navMeshAgent: {fileID: 0}
 --- !u!4 &2119642696 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4942769955779600352, guid: ad9c2b22d32e55d4981ee0bad2f3df15,
@@ -824,7 +830,7 @@ PrefabInstance:
     - target: {fileID: 4942769955779600352, guid: ad9c2b22d32e55d4981ee0bad2f3df15,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 102.8
+      value: 297
       objectReference: {fileID: 0}
     - target: {fileID: 4942769955779600352, guid: ad9c2b22d32e55d4981ee0bad2f3df15,
         type: 3}
@@ -834,7 +840,7 @@ PrefabInstance:
     - target: {fileID: 4942769955779600352, guid: ad9c2b22d32e55d4981ee0bad2f3df15,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.7
+      value: 99
       objectReference: {fileID: 0}
     - target: {fileID: 4942769955779600352, guid: ad9c2b22d32e55d4981ee0bad2f3df15,
         type: 3}
