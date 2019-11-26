@@ -2,10 +2,8 @@
 using JMPlib;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class AIManager : MonoBehaviour
 {
@@ -21,14 +19,15 @@ public class AIManager : MonoBehaviour
 
     [SerializeField] private float updateTimeStep = 0.2f;
 
-    Node positive = new ActionNode(() => Debug.Log("Enemy in sight!"));
-    Node negative = new ActionNode(() => Debug.Log("Enemy out of sight!"));
+    Node positiveAction = new ActionNode(() => Debug.Log("Enemy in sight!"));
+    Node negativeAction = new ActionNode(() => Debug.Log("Enemy out of sight!"));
     //Node setTarget = new ArgAction<>
 
     Coroutine aiCoroutine;
 
     Dictionary<GameObject, Node> enemiesDecisionTree;
 
+#if UNITY_EDITOR
     private void OnValidate()
     {
         if(enemiesDecisionTree != null)
@@ -42,6 +41,7 @@ public class AIManager : MonoBehaviour
 
         }
     }
+#endif
 
     // Start is called before the first frame update
     void Start()
@@ -58,21 +58,22 @@ public class AIManager : MonoBehaviour
             navAgent.navMeshAgent.stoppingDistance = stoppingDistance;
 
             //initialize conditions
-            ArgCondition<NavAgent> hasReachedDestination = new ArgCondition<NavAgent>(HasReachedDestination, navAgent);
-            ArgCondition<Transform> viewDistanceNode = new ArgCondition<Transform>(IsInViewDistance, enemy.transform);
-            ArgCondition<Transform> coneOfViewNode = new ArgCondition<Transform>(IsInConeOfView, enemy.transform);
-            ArgCondition<Transform> clearSightNode = new ArgCondition<Transform>(IsInClearSight, enemy.transform);
+            ArgCondition<NavAgent> hasReachedDestinationCond = new ArgCondition<NavAgent>(HasReachedDestination, navAgent);
+            ArgCondition<Transform> viewDistanceCond = new ArgCondition<Transform>(IsInViewDistance, enemy.transform);
+            ArgCondition<Transform> coneOfViewCond = new ArgCondition<Transform>(IsInConeOfView, enemy.transform);
+            ArgCondition<Transform> clearSightCond = new ArgCondition<Transform>(IsInClearSight, enemy.transform);
 
+            //initialize actions
             ArgAction<NavAgent> startChaseAction = new ArgAction<NavAgent>(StartChase, navAgent);
-            ArgAction<NavAgent> setRandomTarget = new ArgAction<NavAgent>(SetRandomTarget, navAgent);
+            ArgAction<NavAgent> setRandomTargetAction = new ArgAction<NavAgent>(SetRandomTarget, navAgent);
 
             //initialize nodes
-            Node hasReachedDestNode = new BinaryDecisionNode(setRandomTarget, negative, hasReachedDestination);
-            Node isInSight = new BinaryDecisionNode(startChaseAction, hasReachedDestNode, clearSightNode);
-            Node isInConeOfView = new BinaryDecisionNode(isInSight, hasReachedDestNode, coneOfViewNode);
-            Node root = new BinaryDecisionNode(isInConeOfView, hasReachedDestNode, viewDistanceNode);
+            Node hasReachedDestNode = new BinaryDecisionNode(setRandomTargetAction, negativeAction, hasReachedDestinationCond);
+            Node isInSightNode = new BinaryDecisionNode(startChaseAction, hasReachedDestNode, clearSightCond);
+            Node isInConeOfViewNode = new BinaryDecisionNode(isInSightNode, hasReachedDestNode, coneOfViewCond);
+            Node rootNode = new BinaryDecisionNode(isInConeOfViewNode, hasReachedDestNode, viewDistanceCond);
 
-            enemiesDecisionTree.Add(enemy, root);
+            enemiesDecisionTree.Add(enemy, rootNode);
 
         }
         
@@ -94,6 +95,7 @@ public class AIManager : MonoBehaviour
         }
     }
 
+    //not used
     private bool IsChasingTarget(NavAgent navAgent)
     {
         return navAgent.IsChasingTarget;
@@ -109,7 +111,7 @@ public class AIManager : MonoBehaviour
         {
 
             point = Random.insideUnitCircle;
-            destination = new Vector3(point.x, 0, point.y) * viewDistance;
+            destination = new Vector3(transform.position.x, 0, transform.position.z) + new Vector3(point.x, 0, point.y) * viewDistance;
 
         } while (!navAgent.SetDestination(destination));
 

@@ -5,7 +5,7 @@ public class NavAgent : MonoBehaviour
 {
 
     public Transform target;
-    public NavMeshAgent navMeshAgent;
+    [HideInInspector] public NavMeshAgent navMeshAgent;
 
     public bool IsChasingTarget { get; set; }
 
@@ -29,14 +29,16 @@ public class NavAgent : MonoBehaviour
 
     public bool SetDestination(Vector3 destination)
     {
-        navMeshAgent.SetDestination(destination);
-        IsChasingTarget = false;
-        this.destination = destination;
+        NavMeshHit navMeshHit;
+        if (NavMesh.SamplePosition(destination, out navMeshHit, 1f, 1)) //view distnce should be passed by reference
+        {
+            this.destination = navMeshHit.position;
+            navMeshAgent.SetDestination(this.destination);
+            return true;
+        }
 
-        if (navMeshAgent.pathStatus != NavMeshPathStatus.PathComplete)
-        { Debug.Log("REsturend null!"); return false; }
-
-        return true;
+        return false;
+       
 
     }
 
